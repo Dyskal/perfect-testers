@@ -10,7 +10,7 @@ export function setupCounter(element) {
 }
 
 if (import.meta.vitest) {
-  test('adds 1 + 2 to equal 3', () => {
+  test('counter initialized at 0', () => {
     expect(setupCounter(window)).toBe(0);
   });
 }
