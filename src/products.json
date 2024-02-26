@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Hat",
+    "price": 270
+  },
+  {
+    "name": "Scarf",
+    "price": 490
+  },
+  {
+    "name": "Gloves",
+    "price": 150
+  },
+  {
+    "name": "Trousers",
+    "price": 650
+  },
+  {
+    "name": "Jacket",
+    "price": 630
+  },
+  {
+    "name": "Sunglasses",
+    "price": 200
+  }
+]
