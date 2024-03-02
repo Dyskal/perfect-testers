@@ -12,6 +12,7 @@ if (import.meta.vitest) {
 
     // SETUP phase before each test case
     beforeEach(async () => {
+      resetCart();
     });
 
     // TEARDOWN phase after each test case
@@ -50,9 +51,26 @@ if (import.meta.vitest) {
     });
 
     test('test case 5: remove more than one item of the same type in the cart', () => {
+      const item = { name: 'Product 1', price: 20 };
+      addItemToCart(item);
+      addItemToCart(item);
+      removeItemFromCart(0);
+      removeItemFromCart(0); // Remove another item of the same type
+      expect(items).toEqual([]);
+      expect(sum).toBe(0);
     });
 
     test('test case 6: payment button resets the cart', () => {
+      const item = { name: 'Product 1', price: 20 };
+      addItemToCart(item);
+      addItemToCart(item);
+      expect(items).toEqual([item, item]);
+      expect(sum).toBe(item.price * 2);
+
+      resetCart();
+
+      expect(items).toEqual([]);
+      expect(sum).toBe(0);
     });
   });
 }
