@@ -25,12 +25,28 @@ if (import.meta.vitest) {
     });
 
     test('test case 2: add a new item to cart', () => {
+      const newItem = { name: 'New Item', price: 10 };
+      addItemToCart(newItem);
+      expect(items).toEqual([newItem]);
+      expect(sum).toBe(newItem.price);
     });
 
     test('test case 3: add more than one item of the same type in the cart', () => {
+      const newItem = { name: 'Same Item', price: 30 };
+      addItemToCart(newItem);
+      addItemToCart(newItem);
+      expect(items).toEqual([newItem, newItem]);
+      expect(sum).toBe(newItem.price * 2);
     });
 
     test('test case 4: remove an item from cart', () => {
+      const item1 = { name: 'Product 1', price: 20 };
+      const item2 = { name: 'Product 2', price: 40 };
+      addItemToCart(item1);
+      addItemToCart(item2)
+      removeItemFromCart(item2);
+      expect(items).toEqual([item1]);
+      expect(sum).toBe(item1.price);
     });
 
     test('test case 5: remove more than one item of the same type in the cart', () => {
