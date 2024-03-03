@@ -1,6 +1,9 @@
 let items = [];
 let sum = -1;
-function resetCart(){}
+function resetCart(){
+  items = [];
+  sum = 0;
+}
 function addItemToCart(){}
 function removeItemFromCart(){}
 function calculateSum(){}
