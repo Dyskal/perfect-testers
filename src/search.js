@@ -1,9 +1,34 @@
 import { fireEvent } from '@testing-library/dom';
 import products from './products.json';
 
-export function resetList() {}
+export function resetList() {
+  document.querySelector('#products').innerHTML = products.map((product) => `
+      <div class="product">
+        <p>${product.name}</p>
+        <p>${product.price}</p>
+      </div>
+    `).join('');
+}
 
-export function setupSearch() {}
+export function setupSearch() {
+  document.querySelector('#search').addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') {
+      document.querySelector('#products').innerHTML = products
+        .filter((prod) => prod.name.toLowerCase().includes(e.target.value.toLowerCase()))
+        .map((product) => `
+          <div class="product">
+            <p>${product.name}</p>
+            <p>${product.price}</p>
+          </div>
+        `).join('');
+    } else if (e.key === 'Escape') {
+      document.querySelector('#search').value = '';
+      resetList();
+    }
+  });
+
+  document.querySelector('#clear').addEventListener('click', resetList);
+}
 
 if (import.meta.vitest) {
   describe('Search bar integration testing', () => {
