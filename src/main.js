@@ -1,24 +1,19 @@
 import './style/style.css';
-import javascriptLogo from '/javascript.svg';
-import viteLogo from '/vite.svg';
-import { setupCounter } from './counter.js';
+import { resetList, setupSearch } from './search.js';
 
 document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
+  <div class="container">
+    <div class="left-col">
+      <form class="search-bar" onsubmit="event.preventDefault();">
+        <span class="search-icon">&#128269;</span>
+        <input id="search" placeholder="Search...">
+        <button id="clear" type="reset" class="search-icon">&#10060;</button>
+      </form>
+      <div id="products"></div>
     </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
+    <div class="right-col"></div>
   </div>
 `;
 
-setupCounter(document.querySelector('#counter'));
+setupSearch();
+resetList();
