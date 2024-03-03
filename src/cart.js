@@ -8,7 +8,14 @@ function addItemToCart(newItem){
   items.push(newItem);
   sum += newItem.price;
 }
-function removeItemFromCart(){}
+function removeItemFromCart(item){
+  const index = items.indexOf(item);
+  if (index !== -1) {
+    items.splice(index, 1);
+    sum -= item.price;
+
+  }
+}
 
 
 if (import.meta.vitest) {
