@@ -1,47 +1,46 @@
 let items = [];
 let sum = -1;
-function resetCart(){
+
+function resetCart() {
   items = [];
   sum = 0;
 }
-function addItemToCart(newItem){
+
+function addItemToCart(newItem) {
   items.push(newItem);
   sum += newItem.price;
 }
-function removeItemFromCart(item){
+
+function removeItemFromCart(item) {
   const index = items.indexOf(item);
   if (index !== -1) {
     items.splice(index, 1);
     sum -= item.price;
-
   }
 }
 
-
 if (import.meta.vitest) {
-
   // cart suite case
-  describe('cart', () => {
-
+  describe('Cart unit testing', () => {
     // SETUP phase before each test case
-    beforeEach(async () => {
+    beforeEach(() => {
       resetCart();
     });
 
     // TEARDOWN phase after each test case
-    afterEach(async () => {
-      await resetCart(); // clear cart data
+    afterEach(() => {
+      resetCart(); // clear cart data
     });
 
     test('test case 1: cart is initialized empty', () => {
-      expect(items).toBe([]);
+      expect(items).toStrictEqual([]);
       expect(sum).toBe(0);
     });
 
     test('test case 2: add a new item to cart', () => {
       const newItem = { name: 'New Item', price: 10 };
       addItemToCart(newItem);
-      expect(items).toEqual([newItem]);
+      expect(items).toStrictEqual([newItem]);
       expect(sum).toBe(newItem.price);
     });
 
@@ -49,7 +48,7 @@ if (import.meta.vitest) {
       const newItem = { name: 'Same Item', price: 30 };
       addItemToCart(newItem);
       addItemToCart(newItem);
-      expect(items).toEqual([newItem, newItem]);
+      expect(items).toStrictEqual([newItem, newItem]);
       expect(sum).toBe(newItem.price * 2);
     });
 
@@ -57,9 +56,9 @@ if (import.meta.vitest) {
       const item1 = { name: 'Product 1', price: 20 };
       const item2 = { name: 'Product 2', price: 40 };
       addItemToCart(item1);
-      addItemToCart(item2)
+      addItemToCart(item2);
       removeItemFromCart(item2);
-      expect(items).toEqual([item1]);
+      expect(items).toStrictEqual([item1]);
       expect(sum).toBe(item1.price);
     });
 
@@ -67,9 +66,9 @@ if (import.meta.vitest) {
       const item = { name: 'Product 1', price: 20 };
       addItemToCart(item);
       addItemToCart(item);
-      removeItemFromCart(0);
-      removeItemFromCart(0); // Remove another item of the same type
-      expect(items).toEqual([]);
+      removeItemFromCart(item);
+      removeItemFromCart(item); // Remove another item of the same type
+      expect(items).toStrictEqual([]);
       expect(sum).toBe(0);
     });
 
@@ -77,12 +76,12 @@ if (import.meta.vitest) {
       const item = { name: 'Product 1', price: 20 };
       addItemToCart(item);
       addItemToCart(item);
-      expect(items).toEqual([item, item]);
+      expect(items).toStrictEqual([item, item]);
       expect(sum).toBe(item.price * 2);
 
       resetCart();
 
-      expect(items).toEqual([]);
+      expect(items).toStrictEqual([]);
       expect(sum).toBe(0);
     });
   });
