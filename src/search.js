@@ -55,7 +55,7 @@ if (import.meta.vitest) {
     test('should filter no products when typing in search input an invalid item', () => {
       const input = document.querySelector('#search');
       // Send an event to the search input
-      fireEvent.keyUp(input, { target: { value: 'hat' }, key: 'Enter' });
+      fireEvent.keyUp(input, { target: { value: 'invalid' }, key: 'Enter' });
       // Expect the filtered product to be empty
       expect(document.querySelector('.product')).toBeNull();
     });
