@@ -3,11 +3,13 @@ let sum = -1;
 function resetCart(){
   items = [];
   sum = 0;
-
 }
-function addItemToCart(){}
+function addItemToCart(newItem){
+  items.push(newItem);
+  sum += newItem.price;
+}
 function removeItemFromCart(){}
-function calculateSum(){}
+
 
 if (import.meta.vitest) {
 
