@@ -3,6 +3,7 @@ let sum = -1;
 function resetCart(){
   items = [];
   sum = 0;
+
 }
 function addItemToCart(){}
 function removeItemFromCart(){}
