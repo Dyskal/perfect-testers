@@ -1,6 +1,9 @@
 import { fireEvent } from '@testing-library/dom';
 import products from './products.json';
 
+/**
+ * Reset the list of products to default values
+ */
 export function resetList() {
   document.querySelector('#products').innerHTML = products.map((product) => `
       <div class="product">
@@ -10,8 +13,15 @@ export function resetList() {
     `).join('');
 }
 
+/**
+ * Set up the search bar events and actions
+ */
 export function setupSearch() {
-  document.querySelector('#search').addEventListener('keyup', (e) => {
+  const searchInput = document.querySelector('#search');
+
+  searchInput.form.addEventListener('submit', (e) => e.preventDefault());
+
+  searchInput.addEventListener('keyup', (e) => {
     if (e.key === 'Enter') {
       document.querySelector('#products').innerHTML = products
         .filter((prod) => prod.name.toLowerCase().includes(e.target.value.toLowerCase()))
@@ -22,7 +32,7 @@ export function setupSearch() {
           </div>
         `).join('');
     } else if (e.key === 'Escape') {
-      document.querySelector('#search').value = '';
+      searchInput.value = '';
       resetList();
     }
   });
@@ -31,20 +41,61 @@ export function setupSearch() {
 }
 
 if (import.meta.vitest) {
-  describe('Search bar integration testing', () => {
+  describe('Search Module Unit Testing', () => {
     beforeEach(() => {
       // Initialize the document with the correct elements
       document.body.innerHTML = `
-        <input id="search"/>
-        <button id="clear"></button>
-        <div id="products"></div>
+        <form>
+          <input id="search"/>
+          <button id="clear"></button>
+          <div id="products"></div>
+        </form>
       `;
       // Set up the search bar events and contents
       setupSearch();
       resetList();
     });
 
-    test('should filter products when typing in search input a valid item', () => {
+    test('resetList should populate products list correctly', () => {
+      resetList();
+      const productElements = document.querySelectorAll('.product');
+      expect(productElements.length).toBe(products.length);
+      productElements.forEach((productElement, index) => {
+        expect(productElement.textContent).toContain(products[index].name);
+        expect(productElement.textContent).toContain(products[index].price);
+      });
+    });
+
+    test('setupSearch should filter products correctly when Enter is pressed', () => {
+      const input = document.querySelector('#search');
+      fireEvent.keyUp(input, { target: { value: 'hat' }, key: 'Enter' });
+      const productElements = document.querySelectorAll('.product');
+      const filteredProducts = products.filter(product => product.name.toLowerCase().includes('hat'));
+      expect(productElements.length).toBe(filteredProducts.length);
+      productElements.forEach((productElement, index) => {
+        expect(productElement.textContent).toContain(filteredProducts[index].name);
+        expect(productElement.textContent).toContain(filteredProducts[index].price);
+      });
+    });
+  });
+
+
+  describe('Search bar integration testing', () => {
+    beforeEach(() => {
+      // Initialize the document with the correct elements
+      document.body.innerHTML = `
+        <form>
+          <input id="search"/>
+          <button id="clear"></button>
+          <div id="products"></div>
+        </form>
+      `;
+      // Set up the search bar events and contents
+      setupSearch();
+      resetList();
+    });
+
+    test('should display only matching products when a valid search term is entered', () => {
       const input = document.querySelector('#search');
       // Send an event to the search input
       fireEvent.keyUp(input, { target: { value: 'hat' }, key: 'Enter' });
@@ -52,7 +103,7 @@ if (import.meta.vitest) {
       expect(document.querySelector('.product').textContent).toContain('Hat');
     });
 
-    test('should filter no products when typing in search input an invalid item', () => {
+    test('should display no products when an invalid search term is entered', () => {
       const input = document.querySelector('#search');
       // Send an event to the search input
       fireEvent.keyUp(input, { target: { value: 'invalid' }, key: 'Enter' });
@@ -60,15 +111,22 @@ if (import.meta.vitest) {
       expect(document.querySelector('.product')).toBeNull();
     });
 
-    test('should reset products list when clicking on clear button', () => {
+    test('should reset the product list when the clear button is clicked', () => {
       const input = document.querySelector('#search');
       // Send an event to the search input
       fireEvent.keyUp(input, { target: { value: 'Hat' }, key: 'Enter' });
       // Clear the search form
       fireEvent.click(document.querySelector('#clear'));
       // Expect the products to be full
-      expect(document.querySelectorAll('.product')[0].textContent).toContain('Hat');
-      expect(document.querySelectorAll('.product')[1].textContent).toContain('Scarf');
+      expect(document.querySelectorAll('.product').length).toBe(products.length);
+    });
+
+    test('should display all products when Enter is pressed with an empty search bar', () => {
+      const input = document.querySelector('#search');
+      // Send an event to the search input
+      fireEvent.keyUp(input, { target: { value: '' }, key: 'Enter' });
+      // Expect the products to be full
+      expect(document.querySelectorAll('.product').length).toBe(products.length);
     });
   });
 }

@@ -1,18 +1,47 @@
-let items = [];
-let sum = -1;
+/**
+ * Product object type
+ * @typedef {object} Product
+ * @property {string} name - product name
+ * @property {number} price - product price
+ */
 
-function resetCart() {
+/**
+ * The list of items of the cart
+ * @type {Product[]} items
+ */
+let items = [];
+/** The sum of the cart */
+let sum = 0;
+
+/**
+ * Reset the cart data to default values
+ */
+export function resetCart() {
   items = [];
   sum = 0;
 }
 
-function addItemToCart(newItem) {
+/**
+ * Add a new item to the cart and update the total sum
+ *
+ * @param {Product} newItem - new item to add to the cart
+ */
+export function addItemToCart(newItem) {
+  if (newItem.price < 0) {
+    throw new Error('Product prices must be non-negative.');
+  }
+
   items.push(newItem);
   sum += newItem.price;
 }
 
-function removeItemFromCart(item) {
-  const index = items.indexOf(item);
+/**
+ * Remove an item from the cart and update the total sum
+ *
+ * @param {Product} item - item to remove from the cart
+ */
+export function removeItemFromCart(item) {
+  const index = items.findIndex(it => it.name === item.name && it.price === item.price);
   if (index !== -1) {
     items.splice(index, 1);
     sum -= item.price;
@@ -25,11 +54,6 @@ if (import.meta.vitest) {
     // SETUP phase before each test case
     beforeEach(() => {
       resetCart();
-    });
-
-    // TEARDOWN phase after each test case
-    afterEach(() => {
-      resetCart(); // clear cart data
     });
 
     test('test case 1: cart is initialized empty', () => {
@@ -83,6 +107,20 @@ if (import.meta.vitest) {
 
       expect(items).toStrictEqual([]);
       expect(sum).toBe(0);
+    });
+
+    test('test case 7: remove an non existing item from cart', () => {
+      const item = { name: 'Product 1', price: 20 };
+      const item2 = { name: 'Product 2', price: 40 };
+      addItemToCart(item);
+      removeItemFromCart(item2);
+      expect(items).toStrictEqual([item]);
+      expect(sum).toBe(item.price);
+    });
+
+    test('test case 8 : should throw error when adding an item with negative price', () => {
+      const newItem = { name: 'Invalid Item', price: -10 };
+      expect(() => addItemToCart(newItem)).toThrow('Product prices must be non-negative.');
     });
   });
 }
