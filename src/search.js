@@ -41,7 +41,7 @@ export function setupSearch() {
 }
 
 if (import.meta.vitest) {
-  describe('Search Module Unit Testing', () => {
+  describe('Search bar unit testing', () => {
     beforeEach(() => {
       // Initialize the document with the correct elements
       document.body.innerHTML = `
@@ -56,9 +56,10 @@ if (import.meta.vitest) {
       resetList();
     });
 
-    test('resetList should populate products list correctly', () => {
+    test('test case 1: resetList should populate products list correctly', () => {
       resetList();
       const productElements = document.querySelectorAll('.product');
+      // Expect the product elements to be the same as the products file
       expect(productElements.length).toBe(products.length);
       productElements.forEach((productElement, index) => {
         expect(productElement.textContent).toContain(products[index].name);
@@ -66,11 +67,13 @@ if (import.meta.vitest) {
       });
     });
 
-    test('setupSearch should filter products correctly when Enter is pressed', () => {
+    test('test case 2: setupSearch should filter products correctly when Enter is pressed', () => {
       const input = document.querySelector('#search');
+      // Send an event to the search input
       fireEvent.keyUp(input, { target: { value: 'hat' }, key: 'Enter' });
       const productElements = document.querySelectorAll('.product');
       const filteredProducts = products.filter(product => product.name.toLowerCase().includes('hat'));
+      // Expect the filtered product elements to be the same as the filtered products file
       expect(productElements.length).toBe(filteredProducts.length);
       productElements.forEach((productElement, index) => {
         expect(productElement.textContent).toContain(filteredProducts[index].name);
@@ -95,7 +98,7 @@ if (import.meta.vitest) {
       resetList();
     });
 
-    test('should display only matching products when a valid search term is entered', () => {
+    test('test case 1: should display only matching products when a valid search term is entered', () => {
       const input = document.querySelector('#search');
       // Send an event to the search input
       fireEvent.keyUp(input, { target: { value: 'hat' }, key: 'Enter' });
@@ -103,7 +106,7 @@ if (import.meta.vitest) {
       expect(document.querySelector('.product').textContent).toContain('Hat');
     });
 
-    test('should display no products when an invalid search term is entered', () => {
+    test('test case 2: should display no products when an invalid search term is entered', () => {
       const input = document.querySelector('#search');
       // Send an event to the search input
       fireEvent.keyUp(input, { target: { value: 'invalid' }, key: 'Enter' });
@@ -111,7 +114,7 @@ if (import.meta.vitest) {
       expect(document.querySelector('.product')).toBeNull();
     });
 
-    test('should reset the product list when the clear button is clicked', () => {
+    test('test case 3: should reset the product list when the clear button is clicked', () => {
       const input = document.querySelector('#search');
       // Send an event to the search input
       fireEvent.keyUp(input, { target: { value: 'Hat' }, key: 'Enter' });
@@ -121,7 +124,7 @@ if (import.meta.vitest) {
       expect(document.querySelectorAll('.product').length).toBe(products.length);
     });
 
-    test('should display all products when Enter is pressed with an empty search bar', () => {
+    test('test case 4: should display all products when Enter is pressed with an empty search bar', () => {
       const input = document.querySelector('#search');
       // Send an event to the search input
       fireEvent.keyUp(input, { target: { value: '' }, key: 'Enter' });
