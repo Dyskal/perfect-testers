@@ -5,7 +5,6 @@
  * @property {number} price - product price
  */
 
-
 import {fireEvent} from "@testing-library/dom";
 
 /**
@@ -36,6 +35,10 @@ export function addItemToCart(newItem) {
 
   items.push(newItem);
   sum += newItem.price;
+
+  // Update the app cart
+  document.querySelector('#item-list').innerHTML = displayCart();
+  addEventToButtons();
 }
 
 /**
@@ -49,15 +52,113 @@ export function removeItemFromCart(item) {
     items.splice(index, 1);
     sum -= item.price;
   }
+
+  //Update the app cart
+  document.querySelector('#item-list').innerHTML = displayCart();
+  addEventToButtons();
 }
 
-export function setupCart() {}
-function listDistinct(items) {}
+/**
+ * Set up the cart events and actions
+ */
+export function setupCart() {
+  resetCart();
+  resetItems();
+
+  document.querySelector('#pay').addEventListener('click', () => {
+    resetCart();
+    document.querySelector('#item-list').innerHTML = displayCart();
+  });
+
+  document.querySelector('#total-sum').innerHTML = "0 SEK";
+}
+
+/**
+ * Empty the app cart
+ */
+export function resetItems() {
+  document.querySelector('#item-list').innerHTML = '';
+}
+
+/**
+ * Update the app cart based on the item list and sum total
+ */
+export function displayCart() {
+  // Update the sum total
+  document.querySelector('#total-sum').innerHTML = sum + " SEK";
+
+  // Construct the item list and return it
+  return listDistinct(items)
+    .map((item) => `
+        <div class="item" data-name="${item.name}" data-price="${item.price}">
+          <p class="item-name">${item.name}</p>
+          <p class="item-number">x${items.filter((it) => it.name===item.name).length}</p>
+          <p class="item-price">- ${items.filter((it) => it.name===item.name).length*item.price} SEK</p>
+          <button class="more-button">&#10133;</button>
+          <button class="minus-button">&#x2796;</button>
+        </div>
+    `).join('');
+}
+
+/**
+ * Add events to the buttons added in the item list of the cart
+ */
+export function addEventToButtons() {
+  // Button to add more of the item
+  document.querySelectorAll(".more-button").forEach((but) => {
+    but.addEventListener('click', () => {
+      const prod = {name: but.closest('.item').dataset.name, price: Number(but.closest('.item').dataset.price)}
+      addItemToCart(prod)
+    })
+  });
+
+  // Button to remove one copy of the item
+  document.querySelectorAll(".minus-button").forEach((but) => {
+    but.addEventListener('click', () => {
+      const prod = {name: but.closest('.item').dataset.name, price: Number(but.closest('.item').dataset.price)}
+      removeItemFromCart(prod)
+    })
+  });
+}
+
+/**
+ * Return the list given in parameter without duplicates
+ *
+ * @param {Product[]} items - item array whose duplicates must be deleted
+ */
+function listDistinct(items) {
+  let result = []
+  for (const item of items) {
+    let put = true;
+    for (const res of result){
+      if (res.name===item.name && res.price===item.price) {
+        put = false;
+      }
+    }
+    if(put) result.push(item);
+  }
+  return result;
+}
 
 if (import.meta.vitest) {
   describe('Cart unit testing', () => {
     // SETUP phase before each test case
     beforeEach(() => {
+      // Initialize the document with the correct elements
+      document.body.innerHTML = `
+        <div class="cart">
+          <h1 class="cart-title"></h1>
+          <div id="item-list"></div>
+          <div class="separating-line"></div>
+          <div class="total-line">
+            <h2 class="total-title"></h2>
+            <h2 id="total-sum"></h2>
+            <button id="pay" class="pay-button"></button>
+          </div>
+        </div>
+      `;
+      // Set up the cart events and contents
+      setupCart();
       resetCart();
     });
 

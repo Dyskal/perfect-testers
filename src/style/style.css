@@ -20,7 +20,7 @@ img, video {
 
 .container {
   display: flex;
-  width: 85%;
+  width: 95%;
   padding-top: 1.5rem;
   margin-right: auto;
   margin-left: auto;
@@ -29,13 +29,13 @@ img, video {
 
 .left-col {
   display: flex;
-  flex-basis: 70%;
+  flex-basis: 65%;
   flex-direction: column;
   gap: 4rem;
 }
 
 .right-col {
-  flex-basis: 30%;
+  flex-basis: 35%;
 }
 
 .search-bar {
@@ -72,6 +72,106 @@ img, video {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-gap: 2rem;
+}
+
+.cart {
+  flex-direction: column;
+  height: 93dvh;
+  display: flex;
+  min-width: 30rem;
+  border-radius: 3rem;
+  outline: 3px solid black;
+  background: #d9d9d9;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.cart-title {
+  padding: 1rem 0rem 0rem 0rem;
+}
+
+#item-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 90%;
+  flex-basis: 75%;
+  padding: 2rem 0px;
+  margin: 5px;
+  overflow: auto;
+}
+
+.separating-line {
+  width: 90%;
+  display: flex;
+  border-radius: 5px;
+  outline: 1px solid black;
+}
+
+.total-line {
+  padding: 0.2rem 0rem 0rem 0rem;
+  display: flex;
+  flex-basis: 15%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.total-title {
+  margin-right: 8rem;
+  display: flex;
+}
+
+#total-sum {
+  margin-right: 1rem;
+  display: flex;
+}
+
+.pay-button {
+  font-size: larger;
+  padding: 1rem 2rem;
+  border-radius: 5px;
+  outline: 1px solid black;
+  background: #d9d9d9;
+}
+
+.item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 3px;
+}
+
+.item-name {
+  font-size: larger;
+  margin: 3px;
+}
+
+.item-number {
+  font-size: larger;
+  margin: 3px;
+}
+
+.item-price {
+  font-size: larger;
+  margin: 3px;
+}
+
+.more-button {
+  margin: 3px;
+  padding: 2px;
+  border-radius: 5px;
+  outline: 1px solid black;
+  background: #d9d9d9;
+}
+
+.minus-button {
+  margin: 3px;
+  padding: 2px;
+  border-radius: 5px;
+  outline: 1px solid black;
+  background: #d9d9d9;
 }
 
 /*.purchases {*/
