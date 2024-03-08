@@ -237,14 +237,15 @@ if (import.meta.vitest) {
     });
 
     test('test case 2: ListDistinct with 2 different items', () => {
-      expect(listDistinct([{ name: 'Item', price: 10 },{ name: 'Item2', price: 20 }])).toStrictEqual([{ name: 'Item', price: 10 },{ name: 'Item2', price: 20 }]);
+      expect(listDistinct([{ name: 'Item', price: 10 }, { name: 'Item2', price: 20 }]))
+        .toStrictEqual([{ name: 'Item', price: 10 }, { name: 'Item2', price: 20 }]);
     });
 
     test('test case 3: ListDistinct with 2 identical items', () => {
-      expect(listDistinct([{ name: 'Item', price: 10 },{ name: 'Item', price: 10 }])).toStrictEqual([{ name: 'Item', price: 10 }]);
+      expect(listDistinct([{ name: 'Item', price: 10 }, { name: 'Item', price: 10 }]))
+        .toStrictEqual([{ name: 'Item', price: 10 }]);
     });
   });
-
 
   describe('App cart unit testing', () => {
     beforeEach(() => {
@@ -266,17 +267,16 @@ if (import.meta.vitest) {
     });
 
     test('test case 1: cart is initialized empty', () => {
-      expect(document.querySelector('#item-list').textContent).toStrictEqual("");
+      expect(document.querySelector('#item-list').textContent).toStrictEqual('');
     });
 
     test('test case 2: total sum is initialized to 0 SEK', () => {
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual("0 SEK");
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual('0 SEK');
     });
   });
 
-
   describe('App cart integration testing', () => {
-    const itemName = "Item";
+    const itemName = 'Item';
     const itemPrice = 10;
 
     beforeEach(() => {
@@ -301,47 +301,47 @@ if (import.meta.vitest) {
 
     test('test case 1: cart contains the item added', () => {
       expect(document.querySelector('.item-name').textContent).toStrictEqual(itemName);
-      expect(document.querySelector('.item-number').textContent).toStrictEqual("x1");
-      expect(document.querySelector('.item-price').textContent).toStrictEqual("- "+itemPrice+" SEK");
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual(itemPrice+" SEK");
+      expect(document.querySelector('.item-number').textContent).toStrictEqual('x1');
+      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + itemPrice + ' SEK');
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual(itemPrice + ' SEK');
     });
 
     test('test case 2: should add one copy of the item when the more button is clicked', () => {
       // Click on the more button of the item
       fireEvent.click(document.querySelector('.more-button'));
       // Expect the number to be increase by 1
-      expect(document.querySelector('.item-number').textContent).toStrictEqual("x2");
+      expect(document.querySelector('.item-number').textContent).toStrictEqual('x2');
       // Expect the price to be doubled
-      expect(document.querySelector('.item-price').textContent).toStrictEqual("- "+2*itemPrice+" SEK");
+      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + 2 * itemPrice + ' SEK');
       // Expect the sum total to be doubled
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual(2*itemPrice+" SEK");
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual(2 * itemPrice + ' SEK');
     });
 
     test('test case 3: should remove one copy of the item when the minus button is clicked', () => {
       // Click on the more button of the item
       fireEvent.click(document.querySelector('.more-button'));
       // Expect the number to be increase by 1
-      expect(document.querySelector('.item-number').textContent).toStrictEqual("x2");
+      expect(document.querySelector('.item-number').textContent).toStrictEqual('x2');
       // Expect the price to be doubled
-      expect(document.querySelector('.item-price').textContent).toStrictEqual("- "+2*itemPrice+" SEK");
+      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + 2 * itemPrice + ' SEK');
       // Expect the sum total to be doubled
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual(2*itemPrice+" SEK");
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual(2 * itemPrice + ' SEK');
 
       // Click on the minus button of the item
       fireEvent.click(document.querySelector('.minus-button'));
       // Expect the number to be decreased by 1
-      expect(document.querySelector('.item-number').textContent).toStrictEqual("x1");
+      expect(document.querySelector('.item-number').textContent).toStrictEqual('x1');
       // Expect the price to be half the one previously
-      expect(document.querySelector('.item-price').textContent).toStrictEqual("- "+itemPrice+" SEK");
+      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + itemPrice + ' SEK');
       // Expect the sum total to be half the one previously
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual(itemPrice+" SEK");
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual(itemPrice + ' SEK');
     });
 
     test('test case 4: should reset the cart when the payment button is clicked', () => {
       // Click on the payment button of the item
       fireEvent.click(document.querySelector('#pay'));
-      expect(document.querySelector('#item-list').textContent).toStrictEqual("");
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual("0 SEK");
+      expect(document.querySelector('#item-list').textContent).toStrictEqual('');
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual('0 SEK');
     });
   });
 }
