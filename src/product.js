@@ -1,5 +1,11 @@
 import products from './products.json';
 
+// Create a formatter for the SEK currency
+export const numberFormatter = Intl.NumberFormat(Intl.NumberFormat().resolvedOptions().locale, {
+  style: 'currency',
+  currency: 'SEK',
+});
+
 /**
  * Create a product HTML element from a product object
  * @param {Product} product - the product object to create
@@ -9,9 +15,15 @@ function createProduct(product) {
   return `
     <div class="product">
       <p>${product.name}</p>
-      <p>${product.price}</p>
+      <p>${numberFormatter.format(product.price)}</p>
     </div>
   `;
+}
+
+/**
+ * Add event listeners to the product increase and decrease buttons
+ */
+function addEventListeners() {
 }
 
 /**
@@ -22,6 +34,8 @@ export function setupProducts() {
 }
 
 if (import.meta.vitest) {
+  const { fireEvent } = await import('@testing-library/dom');
+
   describe('Search bar unit testing', () => {
     beforeEach(() => {
       // Initialize the document with the correct elements
@@ -32,13 +46,94 @@ if (import.meta.vitest) {
       setupProducts();
     });
 
-    test('test case 1: setupProducts should populate products list correctly', () => {
+    test('test case 1: setupProducts should populate product list correctly', () => {
       const productElements = document.querySelectorAll('.product');
       // Expect the product elements to be the same as the products file
       expect(productElements.length).toBe(products.length);
       productElements.forEach((productElement, index) => {
         expect(productElement.textContent).toContain(products[index].name);
         expect(productElement.textContent).toContain(products[index].price);
+      });
+    });
+
+    test('test case 2: createProduct should create a correct product HTML element', () => {
+      const product = { name: 'Test Product', price: 100 };
+      const productHTML = createProduct(product);
+      expect(productHTML).toContain(product.name);
+      expect(productHTML).toContain(numberFormatter.format(product.price));
+    });
+  });
+
+  describe('Search bar integration testing', () => {
+    beforeEach(() => {
+      // Initialize the document with the correct elements
+      document.body.innerHTML = `
+        <div id="products"></div>
+      `;
+      // Set up the product events and contents
+      setupProducts();
+    });
+
+    test('test case 1: increase button should increase quantity', () => {
+      const increaseButtons = document.querySelectorAll('.increase');
+      expect(increaseButtons).toHaveLength(products.length);
+      increaseButtons.forEach((button) => {
+        const quantityElement = button.nextElementSibling;
+        // Send an event to the increase button
+        fireEvent.click(button);
+        // Expect the quantity to increase to 1
+        expect(Number(quantityElement.textContent)).toBe(1);
+      });
+    });
+
+    test('test case 2: decrease button should decrease quantity', () => {
+      const decreaseButtons = document.querySelectorAll('.decrease');
+      expect(decreaseButtons).toHaveLength(products.length);
+      decreaseButtons.forEach((button) => {
+        const quantityElement = button.previousElementSibling;
+        // Send an event to the increase button first to enable decrease button
+        fireEvent.click(quantityElement.previousElementSibling);
+        // Expect the quantity to increase to 1
+        expect(Number(quantityElement.textContent)).toBe(1);
+        // Send an event to the decrease button
+        fireEvent.click(button);
+        // Expect the quantity to decrease to 0
+        expect(Number(quantityElement.textContent)).toBe(0);
+      });
+    });
+
+    test('test case 3: decrease button should be disabled when quantity is 0', () => {
+      const decreaseButtons = document.querySelectorAll('.decrease');
+      expect(decreaseButtons).toHaveLength(products.length);
+      decreaseButtons.forEach((button) => {
+        // Expect the decrease button to be disabled at start
+        expect(button.disabled).toBe(true);
+        // Send two events to increase then decrease the value
+        fireEvent.click(button.previousElementSibling.previousElementSibling);
+        fireEvent.click(button);
+        // Expect the decrease button to be disabled
+        expect(button.disabled).toBe(true);
+      });
+    });
+
+    test('test case 4: product quantity should not go below 0', () => {
+      const decreaseButtons = document.querySelectorAll('.decrease');
+      expect(decreaseButtons).toHaveLength(products.length);
+      decreaseButtons.forEach((button) => {
+        const quantityElement = button.previousElementSibling;
+        fireEvent.click(button);
+        expect(Number(quantityElement.textContent)).toBe(0);
+      });
+    });
+
+    test('test case 5: decrease button should not be disabled when quantity is more than 0', () => {
+      const decreaseButtons = document.querySelectorAll('.decrease');
+      expect(decreaseButtons).toHaveLength(products.length);
+      decreaseButtons.forEach((button) => {
+        // Send an event to increase first to enable decrease button
+        fireEvent.click(button.previousElementSibling.previousElementSibling);
+        // Expect the decrease button to be enabled
+        expect(button.disabled).toBe(false);
       });
     });
   });
