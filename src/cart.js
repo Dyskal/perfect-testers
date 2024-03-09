@@ -4,7 +4,7 @@
  * @property {string} name - product name
  * @property {number} price - product price
  */
-import { numberFormatter } from './product.js';
+import { numberFormatter, setupProducts } from './product.js';
 
 /**
  * The list of items of the cart
@@ -58,25 +58,19 @@ export function removeItemFromCart(item) {
 }
 
 /**
- * Set up the cart events and actions
+ * Return the list given in parameter without duplicates
+ *
+ * @param {Product[]} items - item array whose duplicates must be deleted
+ * @returns {Product[]} - list without duplicates
  */
-export function setupCart() {
-  resetCart();
-  resetItems();
-
-  document.querySelector('#pay').addEventListener('click', () => {
-    resetCart();
-    document.querySelector('#item-list').innerHTML = displayCart();
-  });
-
-  document.querySelector('#total-sum').innerHTML = numberFormatter.format(0);
-}
-
-/**
- * Empty the app cart
- */
-function resetItems() {
-  document.querySelector('#item-list').innerHTML = '';
+function listDistinct(items) {
+  const result = [];
+  for (const item of items) {
+    if (!result.find((res) => res.name === item.name && res.price === item.price)) {
+      result.push(item);
+    }
+  }
+  return result;
 }
 
 /**
@@ -109,8 +103,7 @@ function addEventToButtons() {
   document.querySelectorAll('.more-button').forEach((but) => {
     but.addEventListener('click', () => {
       const productData = but.closest('.item').dataset;
-      const prod = { name: productData.name, price: Number(productData.price) };
-      addItemToCart(prod);
+      document.querySelector(`[data-name="${productData.name}"] > div > .increase`).click();
     });
   });
 
@@ -118,26 +111,23 @@ function addEventToButtons() {
   document.querySelectorAll('.minus-button').forEach((but) => {
     but.addEventListener('click', () => {
       const productData = but.closest('.item').dataset;
-      const prod = { name: productData.name, price: Number(productData.price) };
-      removeItemFromCart(prod);
+      document.querySelector(`[data-name="${productData.name}"] > div > .decrease`).click();
     });
   });
 }
 
 /**
- * Return the list given in parameter without duplicates
- *
- * @param {Product[]} items - item array whose duplicates must be deleted
- * @returns {Product[]} - list without duplicates
+ * Set up the cart events and actions
  */
-function listDistinct(items) {
-  let result = [];
-  for (const item of items) {
-    if (!result.find((res) => res.name === item.name && res.price === item.price)) {
-      result.push(item);
-    }
-  }
-  return result;
+export function setupCart() {
+  resetCart();
+
+  document.querySelector('#pay').addEventListener('click', () => {
+    resetCart();
+    document.querySelector('#item-list').innerHTML = displayCart();
+  });
+
+  document.querySelector('#total-sum').innerHTML = numberFormatter.format(0);
 }
 
 if (import.meta.vitest) {
@@ -262,17 +252,19 @@ if (import.meta.vitest) {
   });
 
   describe('App cart integration testing', () => {
-    const itemName = 'Item';
-    const itemPrice = 10;
+    const itemName = 'Hat';
+    const itemPrice = 270;
 
     beforeEach(() => {
       // Initialize the document with the correct elements
       document.body.innerHTML = `
+        <div id="products"></div>
         <div id="item-list"></div>
         <h2 id="total-sum"></h2>
         <button id="pay"></button>
       `;
       // Set up the cart events and contents
+      setupProducts();
       setupCart();
       // Add one item in the cart
       addItemToCart({ name: itemName, price: itemPrice });

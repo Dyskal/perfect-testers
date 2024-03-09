@@ -72,7 +72,7 @@ export function setupProducts() {
 if (import.meta.vitest) {
   const { fireEvent } = await import('@testing-library/dom');
 
-  describe('Search bar unit testing', () => {
+  describe('Products unit testing', () => {
     beforeEach(() => {
       // Initialize the document with the correct elements
       document.body.innerHTML = `
@@ -100,7 +100,7 @@ if (import.meta.vitest) {
     });
   });
 
-  describe('Search bar integration testing', () => {
+  describe('Products integration testing', () => {
     beforeEach(() => {
       // Initialize the document with the correct elements
       document.body.innerHTML = `
