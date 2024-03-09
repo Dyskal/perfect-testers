@@ -1,6 +1,5 @@
 import './style/style.css';
-import { resetList, setupSearch } from './search.js';
-import {setupCart} from "./cart.js";
+import { setupCart } from './cart.js';
 import { setupSearch } from './search.js';
 import { setupProducts } from './product.js';
 
@@ -31,5 +30,4 @@ document.querySelector('#app').innerHTML = `
 
 setupProducts();
 setupSearch();
-resetList();
 setupCart();

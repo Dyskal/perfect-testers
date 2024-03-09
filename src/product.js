@@ -1,3 +1,4 @@
+import { addItemToCart, removeItemFromCart } from './cart.js';
 import products from './products.json';
 
 // Create a formatter for the SEK currency
@@ -13,9 +14,15 @@ export const numberFormatter = Intl.NumberFormat(Intl.NumberFormat().resolvedOpt
  */
 function createProduct(product) {
   return `
-    <div class="product">
+    <div class="product" data-name="${product.name}" data-price="${product.price}">
       <p>${product.name}</p>
+      <img src="img/${product.image}" alt="${product.name} image">
       <p>${numberFormatter.format(product.price)}</p>
+      <div>
+        <button class="increase">&#10133;</button>
+        <span class="quantity">0</span>
+        <button class="decrease" disabled>&#10134;</button>
+      </div>
     </div>
   `;
 }
@@ -24,6 +31,32 @@ function createProduct(product) {
  * Add event listeners to the product increase and decrease buttons
  */
 function addEventListeners() {
+  document.querySelectorAll('.increase').forEach((button) => {
+    button.addEventListener('click', () => {
+      const quantityElement = button.nextElementSibling;
+      quantityElement.textContent = String(Number(quantityElement.textContent) + 1);
+      quantityElement.nextElementSibling.disabled = false;
+
+      const productData = button.closest('.product').dataset;
+      addItemToCart({ name: productData.name, price: Number(productData.price) });
+    });
+  });
+
+  document.querySelectorAll('.decrease').forEach((button) => {
+    button.addEventListener('click', () => {
+      const quantityElement = button.previousElementSibling;
+      const currentQuantity = Number(quantityElement.textContent);
+      if (currentQuantity > 1) {
+        quantityElement.textContent = String(currentQuantity - 1);
+      } else {
+        quantityElement.textContent = '0';
+        button.disabled = true;
+      }
+
+      const productData = button.closest('.product').dataset;
+      removeItemFromCart({ name: productData.name, price: Number(productData.price) });
+    });
+  });
 }
 
 /**
@@ -31,6 +64,9 @@ function addEventListeners() {
  */
 export function setupProducts() {
   document.querySelector('#products').innerHTML = products.map(createProduct).join('');
+
+  // Add event listeners to products
+  addEventListeners();
 }
 
 if (import.meta.vitest) {
@@ -69,6 +105,8 @@ if (import.meta.vitest) {
       // Initialize the document with the correct elements
       document.body.innerHTML = `
         <div id="products"></div>
+        <div id="total-sum"></div>
+        <div id="item-list"></div>
       `;
       // Set up the product events and contents
       setupProducts();
