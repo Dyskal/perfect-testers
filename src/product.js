@@ -16,7 +16,7 @@ function createProduct(product) {
   return `
     <div class="product" data-name="${product.name}" data-price="${product.price}">
       <p>${product.name}</p>
-      <img src="img/${product.image}" alt="${product.name} image">
+      <img src="img/${product.name}.webp" alt="${product.name} image" class="product-image">
       <p>${numberFormatter.format(product.price)}</p>
       <div>
         <button class="increase">&#10133;</button>
