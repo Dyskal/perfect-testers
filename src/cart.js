@@ -127,17 +127,6 @@ export function addEventToButtons() {
  * @param {Product[]} items - item array whose duplicates must be deleted
  */
 function listDistinct(items) {
-  let result = []
-  for (const item of items) {
-    let put = true;
-    for (const res of result){
-      if (res.name===item.name && res.price===item.price) {
-        put = false;
-      }
-    }
-    if(put) result.push(item);
-  }
-  return result;
 }
 
 if (import.meta.vitest) {
