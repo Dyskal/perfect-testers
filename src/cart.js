@@ -4,8 +4,7 @@
  * @property {string} name - product name
  * @property {number} price - product price
  */
-
-import {fireEvent} from "@testing-library/dom";
+import { numberFormatter } from './product.js';
 
 /**
  * The list of items of the cart
@@ -18,7 +17,7 @@ let sum = 0;
 /**
  * Reset the cart data to default values
  */
-export function resetCart() {
+function resetCart() {
   items = [];
   sum = 0;
 }
@@ -70,54 +69,58 @@ export function setupCart() {
     document.querySelector('#item-list').innerHTML = displayCart();
   });
 
-  document.querySelector('#total-sum').innerHTML = "0 SEK";
+  document.querySelector('#total-sum').innerHTML = numberFormatter.format(0);
 }
 
 /**
  * Empty the app cart
  */
-export function resetItems() {
+function resetItems() {
   document.querySelector('#item-list').innerHTML = '';
 }
 
 /**
  * Update the app cart based on the item list and sum total
  */
-export function displayCart() {
+function displayCart() {
   // Update the sum total
-  document.querySelector('#total-sum').innerHTML = sum + " SEK";
+  document.querySelector('#total-sum').innerHTML = numberFormatter.format(sum);
 
   // Construct the item list and return it
-  return listDistinct(items)
-    .map((item) => `
-        <div class="item" data-name="${item.name}" data-price="${item.price}">
-          <p class="item-name">${item.name}</p>
-          <p class="item-number">x${items.filter((it) => it.name===item.name).length}</p>
-          <p class="item-price">- ${items.filter((it) => it.name===item.name).length*item.price} SEK</p>
-          <button class="more-button">&#10133;</button>
-          <button class="minus-button">&#x2796;</button>
-        </div>
-    `).join('');
+  return listDistinct(items).map((item) => {
+    const itemNumber = items.filter((it) => it.name === item.name).length;
+    return `
+      <div class="item" data-name="${item.name}" data-price="${item.price}">
+        <p class="item-name">${item.name}</p>
+        <p class="item-number">x${itemNumber}</p>
+        <p class="item-price">- ${numberFormatter.format(itemNumber * item.price)}</p>
+        <button class="more-button">&#10133;</button>
+        <button class="minus-button">&#10134;</button>
+      </div>
+    `;
+  }).join('');
 }
 
 /**
  * Add events to the buttons added in the item list of the cart
  */
-export function addEventToButtons() {
+function addEventToButtons() {
   // Button to add more of the item
-  document.querySelectorAll(".more-button").forEach((but) => {
+  document.querySelectorAll('.more-button').forEach((but) => {
     but.addEventListener('click', () => {
-      const prod = {name: but.closest('.item').dataset.name, price: Number(but.closest('.item').dataset.price)}
-      addItemToCart(prod)
-    })
+      const productData = but.closest('.item').dataset;
+      const prod = { name: productData.name, price: Number(productData.price) };
+      addItemToCart(prod);
+    });
   });
 
   // Button to remove one copy of the item
-  document.querySelectorAll(".minus-button").forEach((but) => {
+  document.querySelectorAll('.minus-button').forEach((but) => {
     but.addEventListener('click', () => {
-      const prod = {name: but.closest('.item').dataset.name, price: Number(but.closest('.item').dataset.price)}
-      removeItemFromCart(prod)
-    })
+      const productData = but.closest('.item').dataset;
+      const prod = { name: productData.name, price: Number(productData.price) };
+      removeItemFromCart(prod);
+    });
   });
 }
 
@@ -125,41 +128,32 @@ export function addEventToButtons() {
  * Return the list given in parameter without duplicates
  *
  * @param {Product[]} items - item array whose duplicates must be deleted
+ * @returns {Product[]} - list without duplicates
  */
 function listDistinct(items) {
-  let result = []
+  let result = [];
   for (const item of items) {
-    let put = true;
-    for (const res of result){
-      if (res.name===item.name && res.price===item.price) {
-        put = false;
-      }
+    if (!result.find((res) => res.name === item.name && res.price === item.price)) {
+      result.push(item);
     }
-    if(put) result.push(item);
   }
   return result;
 }
 
 if (import.meta.vitest) {
+  const { fireEvent } = await import('@testing-library/dom');
+
   describe('Cart unit testing', () => {
     // SETUP phase before each test case
     beforeEach(() => {
       // Initialize the document with the correct elements
       document.body.innerHTML = `
-        <div class="cart">
-          <h1 class="cart-title"></h1>
-          <div id="item-list"></div>
-          <div class="separating-line"></div>
-          <div class="total-line">
-            <h2 class="total-title"></h2>
-            <h2 id="total-sum"></h2>
-            <button id="pay" class="pay-button"></button>
-          </div>
-        </div>
+        <div id="item-list"></div>
+        <h2 id="total-sum"></h2>
+        <button id="pay"></button>
       `;
       // Set up the cart events and contents
       setupCart();
-      resetCart();
     });
 
     test('test case 1: cart is initialized empty', () => {
@@ -230,7 +224,6 @@ if (import.meta.vitest) {
     });
   });
 
-
   describe('ListDistinct unit testing', () => {
     test('test case 1: ListDistinct with an empty list', () => {
       expect(listDistinct([])).toStrictEqual([]);
@@ -251,16 +244,9 @@ if (import.meta.vitest) {
     beforeEach(() => {
       // Initialize the document with the correct elements
       document.body.innerHTML = `
-        <div class="cart">
-          <h1 class="cart-title"></h1>
-          <div id="item-list"></div>
-          <div class="separating-line"></div>
-          <div class="total-line">
-            <h2 class="total-title"></h2>
-            <h2 id="total-sum"></h2>
-            <button id="pay" class="pay-button"></button>
-          </div>
-        </div>
+        <div id="item-list"></div>
+        <h2 id="total-sum"></h2>
+        <button id="pay"></button>
       `;
       // Set up the cart events and contents
       setupCart();
@@ -271,7 +257,7 @@ if (import.meta.vitest) {
     });
 
     test('test case 2: total sum is initialized to 0 SEK', () => {
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual('0 SEK');
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual(numberFormatter.format(0));
     });
   });
 
@@ -282,16 +268,9 @@ if (import.meta.vitest) {
     beforeEach(() => {
       // Initialize the document with the correct elements
       document.body.innerHTML = `
-        <div class="cart">
-          <h1 class="cart-title"></h1>
-          <div id="item-list"></div>
-          <div class="separating-line"></div>
-          <div class="total-line">
-            <h2 class="total-title"></h2>
-            <h2 id="total-sum"></h2>
-            <button id="pay" class="pay-button"></button>
-          </div>
-        </div>
+        <div id="item-list"></div>
+        <h2 id="total-sum"></h2>
+        <button id="pay"></button>
       `;
       // Set up the cart events and contents
       setupCart();
@@ -302,8 +281,8 @@ if (import.meta.vitest) {
     test('test case 1: cart contains the item added', () => {
       expect(document.querySelector('.item-name').textContent).toStrictEqual(itemName);
       expect(document.querySelector('.item-number').textContent).toStrictEqual('x1');
-      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + itemPrice + ' SEK');
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual(itemPrice + ' SEK');
+      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + numberFormatter.format(itemPrice));
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual(numberFormatter.format(itemPrice));
     });
 
     test('test case 2: should add one copy of the item when the more button is clicked', () => {
@@ -312,9 +291,9 @@ if (import.meta.vitest) {
       // Expect the number to be increase by 1
       expect(document.querySelector('.item-number').textContent).toStrictEqual('x2');
       // Expect the price to be doubled
-      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + 2 * itemPrice + ' SEK');
+      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + numberFormatter.format(2 * itemPrice));
       // Expect the sum total to be doubled
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual(2 * itemPrice + ' SEK');
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual(numberFormatter.format(2 * itemPrice));
     });
 
     test('test case 3: should remove one copy of the item when the minus button is clicked', () => {
@@ -323,25 +302,25 @@ if (import.meta.vitest) {
       // Expect the number to be increase by 1
       expect(document.querySelector('.item-number').textContent).toStrictEqual('x2');
       // Expect the price to be doubled
-      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + 2 * itemPrice + ' SEK');
+      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + numberFormatter.format(2 * itemPrice));
       // Expect the sum total to be doubled
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual(2 * itemPrice + ' SEK');
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual(numberFormatter.format(2 * itemPrice));
 
       // Click on the minus button of the item
       fireEvent.click(document.querySelector('.minus-button'));
       // Expect the number to be decreased by 1
       expect(document.querySelector('.item-number').textContent).toStrictEqual('x1');
       // Expect the price to be half the one previously
-      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + itemPrice + ' SEK');
+      expect(document.querySelector('.item-price').textContent).toStrictEqual('- ' + numberFormatter.format(itemPrice));
       // Expect the sum total to be half the one previously
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual(itemPrice + ' SEK');
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual(numberFormatter.format(itemPrice));
     });
 
     test('test case 4: should reset the cart when the payment button is clicked', () => {
       // Click on the payment button of the item
       fireEvent.click(document.querySelector('#pay'));
       expect(document.querySelector('#item-list').textContent).toStrictEqual('');
-      expect(document.querySelector('#total-sum').textContent).toStrictEqual('0 SEK');
+      expect(document.querySelector('#total-sum').textContent).toStrictEqual(numberFormatter.format(0));
     });
   });
 }
