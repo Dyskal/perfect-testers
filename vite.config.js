@@ -7,6 +7,7 @@ export default defineConfig({
     globals: true,
     includeSource: ['src/**/*.js'],
     environment: 'happy-dom',
+    exclude: ['system-tests/**'],
   },
   define: {
     'import.meta.vitest': 'undefined',

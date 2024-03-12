@@ -48,7 +48,7 @@ if (import.meta.vitest) {
       // Send an event to the search input
       fireEvent.keyUp(input, { target: { value: 'hat' }, key: 'Enter' });
       const productElements = document.querySelectorAll('.product:not([hidden])');
-      const filteredProducts = products.filter(product => product.name.toLowerCase().includes('hat'));
+      const filteredProducts = products.filter((product) => product.name.toLowerCase().includes('hat'.toLowerCase()));
 
       // Expect the filtered product elements to be the same as the filtered products file
       expect(productElements.length).toBe(filteredProducts.length);
@@ -57,15 +57,29 @@ if (import.meta.vitest) {
       });
     });
 
-    test('test case 2: should hide all products when an invalid search term is entered', () => {
+    test('test case 2: should display lowercased-matching products when a valid uppercased search term is entered', () => {
       const input = document.querySelector('#search');
       // Send an event to the search input
-      fireEvent.keyUp(input, { target: { value: 'invalid' }, key: 'Enter' });
+      fireEvent.keyUp(input, { target: { value: 'HAT' }, key: 'Enter' });
+      const productElements = document.querySelectorAll('.product:not([hidden])');
+      const filteredProducts = products.filter((product) => product.name.toLowerCase().includes('HAT'.toLowerCase()));
+
+      // Expect the filtered product elements to be the same as the filtered products file
+      expect(productElements.length).toBe(filteredProducts.length);
+      productElements.forEach((productElement, index) => {
+        expect(productElement.textContent).toContain(filteredProducts[index].name);
+      });
+    })
+
+    test('test case 3: should hide all products when an non-existant search term is entered', () => {
+      const input = document.querySelector('#search');
+      // Send an event to the search input
+      fireEvent.keyUp(input, { target: { value: 'non-existant' }, key: 'Enter' });
       // Expect the filtered product list to be empty
       expect(document.querySelectorAll('.product:not([hidden])')).toHaveLength(0);
     });
 
-    test('test case 3: should reset the product list when the clear button is clicked', () => {
+    test('test case 4: should reset the product list when the clear button is clicked', () => {
       const input = document.querySelector('#search');
       // Send an event to the search input
       fireEvent.keyUp(input, { target: { value: 'Hat' }, key: 'Enter' });
@@ -75,7 +89,7 @@ if (import.meta.vitest) {
       expect(document.querySelectorAll('.product')).toHaveLength(products.length);
     });
 
-    test('test case 4: should display all products with an empty search bar', () => {
+    test('test case 5: should display all products with an empty search bar', () => {
       const input = document.querySelector('#search');
       // Send an event to the search input
       fireEvent.keyUp(input, { target: { value: '' }, key: 'Enter' });

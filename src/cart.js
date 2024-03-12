@@ -124,6 +124,7 @@ export function setupCart() {
 
   document.querySelector('#pay').addEventListener('click', () => {
     resetCart();
+    setupProducts();
     document.querySelector('#item-list').innerHTML = displayCart();
   });
 
